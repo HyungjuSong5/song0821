@@ -33,5 +33,11 @@ public:
     void printMemberInfo(int id);
     void removeMember(); 
     void input();
+    IUser& getUser(int id) const {
+        if (id < 0 || id >= users.size()) {
+            throw std::out_of_range("Invalid user ID");
+        }
+        return *(users[id]);
+	}
 };
 

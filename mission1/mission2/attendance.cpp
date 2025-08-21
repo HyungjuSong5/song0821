@@ -46,7 +46,6 @@ void AttendanceProcessor::setTheBasicInfo(const string& name, const string& week
     int id = getId(name);
     WeekdayIndex dayIndex = getWeekdayIndex(weekday);
     if (dayIndex == INVALID) {
-        // 잘못된 요일 입력은 무시
         std::cerr << "Invalid weekday: " << weekday << " for user: " << name << std::endl;
         return;
     }
@@ -55,11 +54,9 @@ void AttendanceProcessor::setTheBasicInfo(const string& name, const string& week
 }
 
 void AttendanceProcessor::addBonousePoint(int id) {
-    // 수요일 출석 10회 이상
     if (users[id]->GetAttendance(WEDNESDAY) > 9) {
         users[id]->AddPoints(10);
     }
-    // 주말 출석 합 10회 이상
     if (users[id]->GetAttendance(SATURDAY) + users[id]->GetAttendance(SUNDAY) > 9) {
         users[id]->AddPoints(10);
     }

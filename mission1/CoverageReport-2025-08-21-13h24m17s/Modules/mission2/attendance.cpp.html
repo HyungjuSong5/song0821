@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>attendance.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "attendance.h"
+
+<span style = "background-color:#dfd">int AttendanceProcessor::getId(const string&amp; name) {
+    if (memberNameIdList.count(name) == 0) {
+        memberNameIdList[name] = ++id_cnt;
+        users.push_back(userFactory-&gt;CreateUser(name, id_cnt));</span>
+    }
+<span style = "background-color:#dfd">    return memberNameIdList[name] - 1; // vector index
+}</span>
+
+<span style = "background-color:#dfd">WeekdayIndex AttendanceProcessor::getWeekdayIndex(const string&amp; weekday) {
+    for (int i = 0; i &lt; DAYCONT; i++) {
+        if (weekdayList[i].name == weekday) {
+            return weekdayList[i].idx;</span>
+        }
+<span style = "background-color:#dfd">    }
+    return INVALID;
+}</span>
+
+<span style = "background-color:#dfd">bool AttendanceProcessor::isDebug(const string&amp; name) {
+    return name == "Daisy";
+}</span>
+
+<span style = "background-color:#dfd">int AttendanceProcessor::getBasicPoint(int id, WeekdayIndex index) {
+    int add_point = 0;
+    switch (index) {</span>
+    case MONDAY:
+    case TUESDAY:
+    case THURSDAY:
+    case FRIDAY:
+<span style = "background-color:#dfd">        add_point = 1;
+        break;</span>
+    case WEDNESDAY:
+<span style = "background-color:#dfd">        add_point = 3;
+        break;</span>
+    case SATURDAY:
+    case SUNDAY:
+<span style = "background-color:#dfd">        add_point = 2;</span>
+        break;
+    }
+<span style = "background-color:#dfd">    users[id]-&gt;AddAttendance(index);
+    return add_point;
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::setTheBasicInfo(const string&amp; name, const string&amp; weekday) {
+    int id = getId(name);
+    WeekdayIndex dayIndex = getWeekdayIndex(weekday);
+    if (dayIndex == INVALID) {
+        std::cerr &lt;&lt; "Invalid weekday: " &lt;&lt; weekday &lt;&lt; " for user: " &lt;&lt; name &lt;&lt; std::endl;
+        return;</span>
+    }
+<span style = "background-color:#dfd">    debug = isDebug(name);
+    users[id]-&gt;AddPoints(getBasicPoint(id, dayIndex));
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::addBonousePoint(int id) {
+    if (users[id]-&gt;GetAttendance(WEDNESDAY) &gt; 9) {
+        users[id]-&gt;AddPoints(10);</span>
+    }
+<span style = "background-color:#dfd">    if (users[id]-&gt;GetAttendance(SATURDAY) + users[id]-&gt;GetAttendance(SUNDAY) &gt; 9) {
+        users[id]-&gt;AddPoints(10);</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::getGrade(int id) {
+    int pts = users[id]-&gt;GetPoints();
+    if (pts &gt;= 50) {
+        users[id]-&gt;SetGrade(GOLD);
+    }
+    else if (pts &gt;= 30) {
+        users[id]-&gt;SetGrade(SILVER);
+    }</span>
+    else {
+<span style = "background-color:#dfd">        users[id]-&gt;SetGrade(NORMAL);</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::printMemberInfo(int id) {
+    cout &lt;&lt; "NAME : " &lt;&lt; users[id]-&gt;GetName() &lt;&lt; ", ";
+    cout &lt;&lt; "POINT : " &lt;&lt; users[id]-&gt;GetPoints() &lt;&lt; ", ";
+    cout &lt;&lt; "GRADE : " &lt;&lt; gradeList[users[id]-&gt;GetGrade()].name &lt;&lt; "\n";
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::removeMember() {
+    cout &lt;&lt; "\nRemoved player\n==============\n";
+    for (size_t id = 0; id &lt; users.size(); id++) {
+        int grade = users[id]-&gt;GetGrade();</span>
+        if (grade != GOLD &amp;&amp; grade != SILVER &amp;&amp;
+            users[id]-&gt;GetAttendance(WEDNESDAY) == 0 &amp;&amp;
+<span style = "background-color:#dfd">            users[id]-&gt;GetAttendance(SATURDAY) == 0 &amp;&amp;</span>
+            users[id]-&gt;GetAttendance(SUNDAY) == 0) {
+<span style = "background-color:#dfd">            cout &lt;&lt; users[id]-&gt;GetName() &lt;&lt; "\n";</span>
+        }
+<span style = "background-color:#dfd">    }
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceProcessor::input() {
+    ifstream fin{ "attendance_weekday_500.txt" };
+    for (int i = 0; i &lt; 500; i++) {
+        string name, weekday;
+        fin &gt;&gt; name &gt;&gt; weekday;
+        setTheBasicInfo(name, weekday);
+    }
+    for (size_t id = 0; id &lt; users.size(); id++) {
+        addBonousePoint(id);
+        getGrade(id);
+        printMemberInfo(id);
+    }
+    removeMember();
+}</span>
+</pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
