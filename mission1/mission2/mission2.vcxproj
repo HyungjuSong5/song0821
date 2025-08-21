@@ -128,11 +128,13 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">               %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="IUser.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="attendance.h" />
     <ClInclude Include="IUserFactory.h" />
     <ClInclude Include="type.h" />
     <ClInclude Include="user.h" />
