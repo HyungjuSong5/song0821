@@ -8,4 +8,4 @@
 | D4 | O |
 | D5 | O |
 
-<img width="1782" height="508" alt="image" src="https://github.com/user-attachments/assets/efc7edc9-d302-4287-9536-ef490260a5ac" />
+<img width="988" height="389" alt="image" src="https://github.com/user-attachments/assets/70497bac-2865-44d2-8969-ba59d479afb1" />
