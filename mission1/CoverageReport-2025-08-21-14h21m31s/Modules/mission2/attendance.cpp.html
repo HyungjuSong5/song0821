@@ -65,20 +65,20 @@
 }</span>
 
 <span style = "background-color:#dfd">void AttendanceProcessor::addBonousePoint(int id) {
-    if (users[id]-&gt;GetAttendance(WEDNESDAY) &gt; 9) {
-        users[id]-&gt;AddPoints(10);</span>
+    if (users[id]-&gt;GetAttendance(WEDNESDAY) &gt; BONUS_THRESHOLD) {
+        users[id]-&gt;AddPoints(BONUS_POINTS);</span>
     }
-<span style = "background-color:#dfd">    if (users[id]-&gt;GetAttendance(SATURDAY) + users[id]-&gt;GetAttendance(SUNDAY) &gt; 9) {
-        users[id]-&gt;AddPoints(10);</span>
+<span style = "background-color:#dfd">    if (users[id]-&gt;GetAttendance(SATURDAY) + users[id]-&gt;GetAttendance(SUNDAY) &gt; BONUS_THRESHOLD) {
+        users[id]-&gt;AddPoints(BONUS_POINTS);</span>
     }
 <span style = "background-color:#dfd">}</span>
 
 <span style = "background-color:#dfd">void AttendanceProcessor::getGrade(int id) {
     int pts = users[id]-&gt;GetPoints();
-    if (pts &gt;= 50) {
+    if (pts &gt;= GOLDGRADE_THRESHOLD) {
         users[id]-&gt;SetGrade(GOLD);
     }
-    else if (pts &gt;= 30) {
+    else if (pts &gt;= SILVERGRADE_THRESHOLD) {
         users[id]-&gt;SetGrade(SILVER);
     }</span>
     else {

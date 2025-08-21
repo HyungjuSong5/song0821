@@ -29,8 +29,12 @@ class AttendanceProcessor {
     vector&lt;std::unique_ptr&lt;IUser&gt;&gt; users;
     IUserFactory* userFactory;
 <span style = "background-color:#dfd">    int id_cnt = 0;
-    bool debug = false;</span>
-
+    bool debug = false;
+	const int MAX_USERS = 100;
+	const int GOLDGRADE_THRESHOLD = 50;
+	const int SILVERGRADE_THRESHOLD = 30;
+	const int BONUS_POINTS = 10;
+	const int BONUS_THRESHOLD = 9;</span>
 public:
 <span style = "background-color:#dfd">    AttendanceProcessor(IUserFactory* factory) : userFactory(factory) {}</span>
 
