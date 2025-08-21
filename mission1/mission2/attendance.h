@@ -19,7 +19,9 @@ class AttendanceProcessor {
     IUserFactory* userFactory;
     int id_cnt = 0;
     bool debug = false;
-
+	const int MAX_USERS = 100;
+	const int GOLDGRADE_THRESHOLD = 30;
+	const int SILVERGRADE_THRESHOLD = 20;
 public:
     AttendanceProcessor(IUserFactory* factory) : userFactory(factory) {}
 

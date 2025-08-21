@@ -54,20 +54,20 @@ void AttendanceProcessor::setTheBasicInfo(const string& name, const string& week
 }
 
 void AttendanceProcessor::addBonousePoint(int id) {
-    if (users[id]->GetAttendance(WEDNESDAY) > 9) {
-        users[id]->AddPoints(10);
+    if (users[id]->GetAttendance(WEDNESDAY) > BONUS_THRESHOLD) {
+        users[id]->AddPoints(BONUS_POINTS);
     }
-    if (users[id]->GetAttendance(SATURDAY) + users[id]->GetAttendance(SUNDAY) > 9) {
-        users[id]->AddPoints(10);
+    if (users[id]->GetAttendance(SATURDAY) + users[id]->GetAttendance(SUNDAY) > BONUS_THRESHOLD) {
+        users[id]->AddPoints(BONUS_POINTS);
     }
 }
 
 void AttendanceProcessor::getGrade(int id) {
     int pts = users[id]->GetPoints();
-    if (pts >= 50) {
+    if (pts >= GOLDGRADE_THRESHOLD) {
         users[id]->SetGrade(GOLD);
     }
-    else if (pts >= 30) {
+    else if (pts >= SILVERGRADE_THRESHOLD) {
         users[id]->SetGrade(SILVER);
     }
     else {
