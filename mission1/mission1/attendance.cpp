@@ -1,3 +1,4 @@
+Ôªø#if 1
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -7,15 +8,59 @@
 
 using namespace std;
 
+enum WeekdayIndex {
+	MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY, DAYCONT, INVALID = DAYCONT
+};
+
+enum Grade {
+	NORMAL, GOLD, SILVER, GRADECONT
+};
+
+struct weekdayInfo {
+	string name;
+	WeekdayIndex idx;
+};
+
+weekdayInfo weekdayList[DAYCONT] = {
+	{"monday", MONDAY},
+	{"tuesday", TUESDAY},
+	{"wednesday", WEDNESDAY},
+	{"thursday", THURSDAY},
+	{"friday", FRIDAY},
+	{"saturday", SATURDAY},
+	{"sunday", SUNDAY}
+};
+
+struct gradeInfo {
+	string name;
+	Grade seq;
+};
+
+gradeInfo gradeList[GRADECONT] = {
+	{"NORMAL", NORMAL},
+	{"GOLD", GOLD},
+	{"SILVER", SILVER}
+};
+
+struct User {
+	string name;
+	int id;
+	int points;
+	int grade;
+	int dat[7]; // 0: Monday, 1: Tuesday, 2: Wednesday, 3: Thursday, 4: Friday, 5: Saturday, 6: Sunday
+};
+
+User users[100]; // Assuming a maximum of 100 users
+
 struct Node {
 	string w;
 	string wk;
 };
 
-map<string, int> id1;
+map<string, int> memberNameIdList;
 int id_cnt = 0;
 
-//dat[ªÁøÎ¿⁄ID][ø‰¿œ]
+//dat[ÏÇ¨Ïö©ÏûêID][ÏöîÏùº]
 int dat[100][100];
 int points[100];
 int grade[100];
@@ -24,117 +69,138 @@ string names[100];
 int wed[100];
 int weeken[100];
 
-void input2(string w, string wk) {
-	//ID ∫Œø©
-	if (id1.count(w) == 0) {
-		id1.insert({ w, ++id_cnt });
+bool debug = false;
 
-		if (w == "Daisy") {
-			int debug = 1;
-		}
-
-		names[id_cnt] = w;
-	}
-	int id2 = id1[w];
-
-	//µπˆ±ÎøÎ
-	if (w == "Daisy") {
-		int debug = 1;
-	}
+void getGrade(int id);
+void printMemberInfo(int id);
+int getId(const string& name);
+bool isDebug(string name);
+void removeMember();
+int getBasicPoint(int id, WeekdayIndex index);
+WeekdayIndex getWeekdayIndex(const string& weekday);
 
 
-	int add_point = 0;
-	int index = 0;
-	if (wk == "monday") {
-		index = 0;
-		add_point++;
-	}
-	if (wk == "tuesday") {
-		index = 1;
-		add_point++;
-	}
-	if (wk == "wednesday") {
-		index = 2;
-		add_point += 3;
-		wed[id2] += 1;
-	}
-	if (wk == "thursday") {
-		index = 3;
-		add_point++;
-	}
-	if (wk == "friday") {
-		index = 4;
-		add_point++;
-	}
-	if (wk == "saturday") {
-		index = 5;
-		add_point += 2;
-		weeken[id2] += 1;
-	}
-	if (wk == "sunday") {
-		index = 6;
-		add_point += 2;
-		weeken[id2] += 1;
+void setTheBasicInfo(string name, string weekday) {
+	int id = getId(name);
+	WeekdayIndex dayIndex = getWeekdayIndex(weekday);
+
+	debug = isDebug(name);
+	points[id] += getBasicPoint(id, dayIndex);
+}
+
+void addBonousePoint(int id) {
+	if (dat[id][2] > 9) { // ÏàòÏöîÏùº
+		points[id] += 10;
 	}
 
-	//ªÁøÎ¿⁄ID∫∞ ø‰¿œ µ•¿Ã≈Õø° 1æø ¡ı∞°
-	dat[id2][index] += 1;
-	points[id2] += add_point;
+	if (dat[id][5] + dat[id][6] > 9) { // Ï£ºÎßê
+		points[id] += 10;
+	}
 }
 
 void input() {
-	ifstream fin{ "attendance_weekday_500.txt" }; //500∞≥ µ•¿Ã≈Õ ¿‘∑¬
+	ifstream fin{ "attendance_weekday_500.txt" }; //500Í∞ú Îç∞Ïù¥ÌÑ∞ ÏûÖÎ†•
 	for (int i = 0; i < 500; i++) {
-		string t1, t2;
-		fin >> t1 >> t2;
-		input2(t1, t2);
+		string name, weekday;
+		fin >> name >> weekday;
+		setTheBasicInfo(name, weekday);
 	}
 
-	for (int i = 1; i <= id_cnt; i++) {
-		if (dat[i][2] > 9) {
-			points[i] += 10;
-		}
+	for (int id = 1; id <= id_cnt; id++) {
+		addBonousePoint(id);
 
-		if (dat[i][5] + dat[i][6] > 9) {
-			points[i] += 10;
-		}
+		getGrade(id);
 
-		if (points[i] >= 50) {
-			grade[i] = 1;
-		}
-		else if (points[i] >= 30) {
-			grade[i] = 2;
-		}
-		else {
-			grade[i] = 0;
-		}
-
-		cout << "NAME : " << names[i] << ", ";
-		cout << "POINT : " << points[i] << ", ";
-		cout << "GRADE : ";
-
-		if (grade[i] == 1) {
-			cout << "GOLD" << "\n";
-		}
-		else if (grade[i] == 2) {
-			cout << "SILVER" << "\n";
-		}
-		else {
-			cout << "NORMAL" << "\n";
-		}
+		printMemberInfo(id);
 	}
 
+	removeMember();
+}
+
+int getId(const string& name) {
+	if (memberNameIdList.count(name) == 0) {
+		memberNameIdList[name] = ++id_cnt;
+		names[id_cnt] = name;
+	}
+	return memberNameIdList[name];
+}
+
+bool isDebug(string name) {
+	if (name == "Daisy") {
+		return true;
+	}
+	return false;
+}
+
+WeekdayIndex getWeekdayIndex(const string& weekday) {
+	for (int i = 0; i < DAYCONT; i++) {
+		if (weekdayList[i].name == weekday) {
+			return weekdayList[i].idx;
+		}
+	}
+	return INVALID;
+}
+
+int getBasicPoint(int id, WeekdayIndex index) {
+	int add_point = 0;
+
+	switch (index) {
+	case MONDAY:
+	case TUESDAY:
+	case THURSDAY:
+	case FRIDAY:
+		add_point = 1;
+		break;
+	case WEDNESDAY:
+		add_point = 3;
+		wed[id] += 1;
+		break;
+	case SATURDAY:
+	case SUNDAY:
+		add_point = 2;
+		weeken[id] += 1;
+		break;
+	}
+
+	//ÏÇ¨Ïö©ÏûêIDÎ≥Ñ ÏöîÏùº Îç∞Ïù¥ÌÑ∞Ïóê 1Ïî© Ï¶ùÍ∞Ä
+	dat[id][index] += 1;
+	return add_point;
+}
+void removeMember()
+{
 	std::cout << "\n";
 	std::cout << "Removed player\n";
 	std::cout << "==============\n";
-	for (int i = 1; i <= id_cnt; i++) {
+	for (int id = 1; id <= id_cnt; id++) {
 
-		if (grade[i] != 1 && grade[i] != 2 && wed[i] == 0 && weeken[i] == 0) {
-			std::cout << names[i] << "\n";
+		if (grade[id] != GOLD && grade[id] != SILVER && wed[id] == 0 && weeken[id] == 0) {
+			std::cout << names[id] << "\n";
 		}
+	}
+}
+
+void printMemberInfo(int id)
+{
+	cout << "NAME : " << names[id] << ", ";
+	cout << "POINT : " << points[id] << ", ";
+	cout << "GRADE : " << gradeList[grade[id]].name << "\n";
+}
+
+void getGrade(int id)
+{
+	if (points[id] >= 50) {
+		grade[id] = GOLD;
+	}
+	else if (points[id] >= 30) {
+		grade[id] = SILVER;
+	}
+	else {
+		grade[id] = NORMAL;
 	}
 }
 
 int main() {
 	input();
 }
+
+#endif
